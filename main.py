@@ -19,7 +19,6 @@ def RenderCheckers(checkers) :
                 continue
             if checker == 2 :
                 color = (255, 0, 0)
-                #print(f"{x} {y} {row} {checker} {time.process_time()}", flush=True)
 
             pygame.draw.circle(screen, color, (size / 2 + x * size, size / 2 + y * size), size * 0.45)
 
