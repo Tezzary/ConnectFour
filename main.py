@@ -10,15 +10,18 @@ screen = pygame.display.set_mode((size * 7, size * 6))
 gameOver = False
 
 def RenderCheckers(checkers) :
-    screen.fill((0,0,0))
+    screen.fill((0, 0, 255))
     for y, row in enumerate(checkers) :
         for x, checker in enumerate(row) :
-            color = (0, 0, 255)
+
+            pygame.draw.circle(screen, (0, 0, 0), (size / 2 + x * size, size / 2 + y * size), size * 0.45)
+
+            color = (255, 0, 0)
            # print(checker)
             if checker == 0 :
                 continue
             if checker == 2 :
-                color = (255, 0, 0)
+                color = (255, 255, 0)
 
             pygame.draw.circle(screen, color, (size / 2 + x * size, size / 2 + y * size), size * 0.45)
 
@@ -45,13 +48,15 @@ while not gameOver :
             gameOver = True
         elif event.type == pygame.MOUSEBUTTONDOWN :
             Clicked()
+        elif event.type == pygame.KEYDOWN :
+            logic.newGame()
     
     RenderCheckers(logic.currentBoardLayout)
 
   #  print(pygame.mouse.get_pos())
 
     pygame.display.update()
-    time.sleep(0.001)
+    time.sleep(0.1)
 
     
 pygame.quit()
