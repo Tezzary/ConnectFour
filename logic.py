@@ -51,7 +51,7 @@ def newGame(rows = 6, columns = 7) :
 
 def checkWin(boardState) :
     for player in range(1,3):
-        for row in range(0, rows - 1) :
+        for row in range(0, rows) :
             for column in range(0, columns - 3) : #horizontal check
                 if boardState[row][column] == player and boardState[row][column + 1] == player and boardState[row][column + 2] == player and boardState[row][column + 3] == player :
                     return player, (row, column), (row, column + 1), (row, column + 2), (row, column + 3)
