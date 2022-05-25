@@ -2,6 +2,7 @@ import math
 import pygame
 import logic
 import time
+
 pygame.init()
 
 size = 160
@@ -53,9 +54,22 @@ while not gameOver :
     
     RenderCheckers(logic.currentBoardLayout)
 
-  #  print(pygame.mouse.get_pos())
-
     pygame.display.update()
+
+    win, pos1, pos2, pos3, pos4 = logic.checkWin(logic.currentBoardLayout)
+
+    if win == 1 or win == 2:
+        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos1[1] * size, size / 2 + pos1[0] * size), size * 0.45)
+        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos2[1] * size, size / 2 + pos2[0] * size), size * 0.45)
+        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos3[1] * size, size / 2 + pos3[0] * size), size * 0.45)
+        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos4[1] * size, size / 2 + pos4[0] * size), size * 0.45)
+        pygame.display.update()
+        time.sleep(5)
+        logic.newGame()
+    elif(win == 1 ):
+        logic.newGame()
+    elif(win == 2):
+        logic.newGame()
     time.sleep(0.1)
 
     
