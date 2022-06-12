@@ -2,13 +2,15 @@ import math
 import pygame
 import logic
 import time
-
+import bot
 pygame.init()
 
 size = 160
 screen = pygame.display.set_mode((size * 7, size * 6))
 
 gameOver = False
+
+botEnabled = True
 
 def RenderCheckers(checkers) :
     screen.fill((0, 0, 255))
@@ -44,6 +46,35 @@ def Clicked() :
 
 while not gameOver :
 
+    if logic.player == 2 and botEnabled:
+        depth = 5
+        print(len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]))
+        if len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 6:
+            depth = 6
+        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 5:
+            depth = 7
+        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 4:
+            depth = 8
+        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 3:
+            depth = 10
+        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 2 or len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 1:
+            depth = 19
+        analysis, move = bot.getBestMove(logic.currentBoardLayout, depth)
+
+        if analysis == 1000:
+            text = "I have a guaranteed win!"
+        if analysis == -1000:
+            text = "If you play perfectly you have a guaranteed win!"
+        if analysis > 0:
+            text = f"I think I'm winning by {analysis}!"
+        elif analysis < 0:
+            text = f"I think I'm losing by {analysis * -1}!"
+        else:
+            text = f"I think we are equal!"
+        
+        for row in range(len(logic.currentBoardLayout)):
+            logic.AddChecker((move, row))
+        print(f"{text}")
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             gameOver = True
@@ -56,9 +87,8 @@ while not gameOver :
 
     pygame.display.update()
 
-    win, pos1, pos2, pos3, pos4 = logic.checkWin(logic.currentBoardLayout)
-
-    if win == 1 or win == 2:
+    if logic.checkWin(logic.currentBoardLayout, 1) or logic.checkWin(logic.currentBoardLayout, 2):
+        pos1, pos2, pos3, pos4 = logic.winPositions(logic.currentBoardLayout)
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos1[1] * size, size / 2 + pos1[0] * size), size * 0.45)
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos2[1] * size, size / 2 + pos2[0] * size), size * 0.45)
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos3[1] * size, size / 2 + pos3[0] * size), size * 0.45)
@@ -66,10 +96,7 @@ while not gameOver :
         pygame.display.update()
         time.sleep(5)
         logic.newGame()
-    elif(win == 1 ):
-        logic.newGame()
-    elif(win == 2):
-        logic.newGame()
+
     time.sleep(0.1)
 
     
