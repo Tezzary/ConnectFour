@@ -15,9 +15,15 @@ scoreMatrix = [
     [1, 2, 3, 4, 3, 2, 1]
     ]
 
-def init(playerNum, aiNum) :
-    playerNumber = playerNum
-    aiNumber = aiNum
+def init(botplaysFirst) :
+    global playerNumber
+    global aiNumber
+    if botplaysFirst:
+        playerNumber = 2
+        aiNumber = 1
+    else:
+        playerNumber = 1
+        aiNumber = 2
 
 def analyseBoard(boardState) :
     if logic.checkWin(boardState, aiNumber):
@@ -61,7 +67,7 @@ def minimax(boardState, depth, maximizingPlayer) :
         return analyseBoard(boardState), -1
 
     if maximizingPlayer :
-        value = -10
+        value = -10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
         for num in range(0, len(columns)) :
@@ -71,7 +77,7 @@ def minimax(boardState, depth, maximizingPlayer) :
                 bestCol = columns[num]
         return value, bestCol
     else :
-        value = 10
+        value = 10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
         for num in range(0, len(columns)) :

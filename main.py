@@ -11,6 +11,10 @@ screen = pygame.display.set_mode((size * 7, size * 6))
 gameOver = False
 
 botEnabled = True
+botPlaysFirst = False
+
+if botEnabled:
+    bot.init(botPlaysFirst)
 
 def RenderCheckers(checkers) :
     screen.fill((0, 0, 255))
@@ -46,7 +50,7 @@ def Clicked() :
 
 while not gameOver :
 
-    if logic.player == 2 and botEnabled:
+    if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
         depth = 5
         print(len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]))
         if len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 6:
@@ -61,11 +65,13 @@ while not gameOver :
             depth = 19
         analysis, move = bot.getBestMove(logic.currentBoardLayout, depth)
 
-        if analysis == 1000:
+        if analysis == 10000:
+            text = "This should be a draw!"
+        elif analysis >= 1000:
             text = "I have a guaranteed win!"
-        if analysis == -1000:
+        elif analysis <= -1000:
             text = "If you play perfectly you have a guaranteed win!"
-        if analysis > 0:
+        elif analysis > 0:
             text = f"I think I'm winning by {analysis}!"
         elif analysis < 0:
             text = f"I think I'm losing by {analysis * -1}!"
@@ -80,8 +86,8 @@ while not gameOver :
             gameOver = True
         elif event.type == pygame.MOUSEBUTTONDOWN :
             Clicked()
-        elif event.type == pygame.KEYDOWN :
-            logic.newGame()
+       # elif event.type == pygame.KEYDOWN :
+        #    logic.newGame()
     
     RenderCheckers(logic.currentBoardLayout)
 
