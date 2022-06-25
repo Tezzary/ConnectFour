@@ -3,9 +3,18 @@ import pygame
 import logic
 import time
 import bot
+import platform
+
 pygame.init()
 
-size = 160
+size = 0
+
+os = platform.system()
+
+if os == "Darwin":
+    size = 140
+else:
+    size = 160
 screen = pygame.display.set_mode((size * 7, size * 6))
 
 gameOver = False
@@ -51,7 +60,7 @@ def Clicked() :
 while not gameOver :
 
     if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
-        depth = 5
+        depth = 8
         print(len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]))
         if len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 6:
             depth = 6

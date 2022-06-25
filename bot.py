@@ -60,7 +60,7 @@ def possibleMoves(boardState, player) :
 def isTerminalNode(boardState) :
     return logic.checkWin(boardState, 1) or logic.checkWin(boardState, 2) or len(possibleMoves(boardState, 1)) == 0
 
-def minimax(boardState, depth, maximizingPlayer) :
+def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
     callCount += 1
     if isTerminalNode(boardState) or depth == 0:
@@ -71,26 +71,34 @@ def minimax(boardState, depth, maximizingPlayer) :
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
         for num in range(0, len(columns)) :
-            boardValue, move = minimax(layouts[num], depth - 1, False)
+            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, False)
             if boardValue > value :
                 value = boardValue
                 bestCol = columns[num]
+            if value >= beta :
+                break
+            if alpha < value:
+                alpha = value
         return value, bestCol
     else :
         value = 10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
         for num in range(0, len(columns)) :
-            boardValue, move = minimax(layouts[num], depth - 1, True)
+            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, True)
             if boardValue < value :
                 value = boardValue
                 bestCol = columns[num]
+            if value <= alpha :
+                break
+            if beta > value:
+                beta = value
         return value, bestCol
 
 def getBestMove(boardState, depth):
     global callCount
     callCount = 0
-    value, column = minimax(boardState, depth, True)
+    value, column = minimax(boardState, depth, -10000, 10000, True)
     print(callCount)
     return value, column
 
