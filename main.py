@@ -10,7 +10,7 @@ pygame.init()
 size = 0
 
 os = platform.system()
-print(os)
+
 if os == "Darwin":
     size = 140
 else:
