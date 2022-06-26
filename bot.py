@@ -1,6 +1,5 @@
 import logic
-from copy import deepcopy
-
+from copy import deepcopy, copy
 playerNumber = 1
 aiNumber = 2
 
@@ -46,11 +45,12 @@ def possibleMoves(boardState, player) :
 
     layouts = []
     columns = []
-    for row in range(0, logic.rows) :
-        for column in range(0, logic.columns) :
+    for row in range(6) :
+        for column in range(7) :
             if boardState[row][column] == 0 and (row == logic.rows - 1 or boardState[row + 1][column] != 0) :
-                layoutsCount = len(layouts)
-                copiedBoard = deepcopy(boardState)
+                copiedBoard = []
+                for r in boardState:
+                    copiedBoard.append(r.copy())
                 copiedBoard[row][column] = player
                 layouts.append(copiedBoard)
                 columns.append(column)
@@ -58,7 +58,7 @@ def possibleMoves(boardState, player) :
     return layouts, columns
 
 def isTerminalNode(boardState) :
-    return logic.checkWin(boardState, 1) or logic.checkWin(boardState, 2) or len(possibleMoves(boardState, 1)) == 0
+    return len(possibleMoves(boardState, 1)) == 0
 
 def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
@@ -71,11 +71,15 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
         for num in range(0, len(columns)) :
+            if logic.checkWin(layouts[num], playerNumber):
+                return -1000, -1
+        for num in range(0, len(columns)) :
             boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, False)
+            
             if boardValue > value :
                 value = boardValue
                 bestCol = columns[num]
-            if value >= beta :
+            if value >= beta or value >= 10000:
                 break
             if alpha < value:
                 alpha = value
@@ -85,17 +89,20 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
         for num in range(0, len(columns)) :
+            if logic.checkWin(layouts[num], aiNumber):
+                return 1000, -1
+        for num in range(0, len(columns)) :
             boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, True)
             if boardValue < value :
                 value = boardValue
                 bestCol = columns[num]
-            if value <= alpha :
+            if value <= alpha or value <= -10000:
                 break
             if beta > value:
                 beta = value
         return value, bestCol
 
-def getBestMove(boardState, depth):
+def getBestMove(boardState, timeOut):
     global callCount
     callCount = 0
     value, column = minimax(boardState, depth, -10000, 10000, True)
