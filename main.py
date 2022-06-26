@@ -60,18 +60,19 @@ def Clicked() :
 while not gameOver :
 
     if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
-        depth = 8
+        t1 = time.time()
+        depth = 9
         print(len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]))
         if len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 6:
-            depth = 6
+            depth = 11
         elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 5:
-            depth = 7
+            depth = 13
         elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 4:
-            depth = 8
+            depth = 15
         elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 3:
-            depth = 10
+            depth = 18
         elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 2 or len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 1:
-            depth = 19
+            depth = 25
         analysis, move = bot.getBestMove(logic.currentBoardLayout, depth)
 
         if analysis == 10000:
@@ -89,7 +90,8 @@ while not gameOver :
         
         for row in range(len(logic.currentBoardLayout)):
             logic.AddChecker((move, row))
-        print(f"{text}")
+        t2 = time.time()
+        print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds")
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             gameOver = True
