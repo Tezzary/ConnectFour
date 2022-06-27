@@ -1,5 +1,7 @@
 import logic
 from copy import deepcopy, copy
+from threading import Thread
+
 playerNumber = 1
 aiNumber = 2
 
@@ -58,7 +60,7 @@ def possibleMoves(boardState, player) :
     return layouts, columns
 
 def isTerminalNode(boardState) :
-    return len(possibleMoves(boardState, 1)) == 0
+    return len(possibleMoves(boardState, 1)) == 0 or logic.checkWin(boardState, playerNumber) or logic.checkWin(boardState, aiNumber)
 
 def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
@@ -70,9 +72,9 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         value = -10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
-        for num in range(0, len(columns)) :
+        '''    for num in range(0, len(columns)) :
             if logic.checkWin(layouts[num], playerNumber):
-                return -1000, -1
+                return -1000, -1'''
         for num in range(0, len(columns)) :
             boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, False)
             
@@ -88,9 +90,9 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         value = 10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
-        for num in range(0, len(columns)) :
+        '''for num in range(0, len(columns)) :
             if logic.checkWin(layouts[num], aiNumber):
-                return 1000, -1
+                return 1000, -1'''
         for num in range(0, len(columns)) :
             boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, True)
             if boardValue < value :
@@ -102,11 +104,12 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
                 beta = value
         return value, bestCol
 
-def getBestMove(boardState, timeOut):
+def getBestMove(boardState, depth):
     global callCount
     callCount = 0
+
     value, column = minimax(boardState, depth, -10000, 10000, True)
-    print(callCount)
+    print("Completed {depth} depth in")
     return value, column
 
 if __name__ == "__main__":
