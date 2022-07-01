@@ -1,7 +1,7 @@
 import logic
 from copy import deepcopy, copy
 from threading import Thread
-
+import time
 playerNumber = 1
 aiNumber = 2
 
@@ -26,11 +26,11 @@ def init(botplaysFirst) :
         playerNumber = 1
         aiNumber = 2
 
-def analyseBoard(boardState) :
+def analyseBoard(boardState, depth) :
     if logic.checkWin(boardState, aiNumber):
-        return 1000
+        return 1000 + depth
     if logic.checkWin(boardState, playerNumber):
-        return -1000
+        return -1000 - depth
     playerScore = 0
     aiScore = 0
     for r in range(len(boardState)):
@@ -66,7 +66,9 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
     callCount += 1
     if isTerminalNode(boardState) or depth == 0:
-        return analyseBoard(boardState), -1
+        return analyseBoard(boardState, depth), -1, False
+
+    okayMoves = 0
 
     if maximizingPlayer :
         value = -10000
@@ -76,16 +78,21 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
             if logic.checkWin(layouts[num], playerNumber):
                 return -1000, -1'''
         for num in range(0, len(columns)) :
-            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, False)
+            boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, False)
             
             if boardValue > value :
                 value = boardValue
                 bestCol = columns[num]
-            if value >= beta or value >= 10000:
+            if value >= beta:
                 break
             if alpha < value:
                 alpha = value
-        return value, bestCol
+            if value > -1000:
+                okayMoves += 1
+            if depth == 2:
+                print(f"{boardValue} val {num} current place {move + 1} my best move after")
+            
+        return value, bestCol, okayMoves
     else :
         value = 10000
         bestCol = -1
@@ -94,30 +101,34 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
             if logic.checkWin(layouts[num], aiNumber):
                 return 1000, -1'''
         for num in range(0, len(columns)) :
-            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, True)
+            boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, True)
+            
             if boardValue < value :
                 value = boardValue
                 bestCol = columns[num]
-            if value <= alpha or value <= -10000:
+            if value <= alpha:
                 break
             if beta > value:
                 beta = value
-        return value, bestCol
+            if boardValue < 1000:
+                okayMoves += 1
+            
+        return value, bestCol, okayMoves
 
 def getBestMove(boardState, depth):
     global callCount
     callCount = 0
-
-    value, column = minimax(boardState, depth, -10000, 10000, True)
-    print("Completed {depth} depth in")
-    return value, column
+    t = time.time()
+    value, column, okayMoves = minimax(boardState, depth, -10000, 10000, True)
+    print(f"Completed {depth} depth in {round(time.time() - t, 6)} seconds at {callCount} positions searched!")
+    return value, column, okayMoves, callCount
 
 if __name__ == "__main__":
     print(possibleMoves([
-    [0, 2, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0],
-    [0, 2, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0],
-    [0, 1, 2, 2, 2, 1, 0],
-    [1, 2, 1, 1, 1, 2, 0]
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 0, 0, 0],
+    [0, 1, 1, 1, 2, 0, 0]
     ], 2)[0])

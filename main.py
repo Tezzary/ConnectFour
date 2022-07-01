@@ -58,22 +58,18 @@ def Clicked() :
     logic.AddChecker((closest[1], closest[2]))
 
 while not gameOver :
-
     if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
         t1 = time.time()
-        depth = 9
-        print(len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]))
-        if len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 6:
-            depth = 11
-        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 5:
-            depth = 13
-        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 4:
-            depth = 15
-        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 3:
-            depth = 18
-        elif len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 2 or len(bot.possibleMoves(logic.currentBoardLayout, 2)[0]) == 1:
-            depth = 25
-        analysis, move = bot.getBestMove(logic.currentBoardLayout, depth)
+        analysis = move = okayMoves = callCount = None
+        upperBound = 25
+        for depth in range(2, upperBound + 1):
+            analysis, move, okayMoves, callCount = bot.getBestMove(logic.currentBoardLayout, depth)
+            #print(f"{forced} {depth}")
+            if okayMoves < 2 or analysis >= 1000 or time.time() - t1 > 3:
+                for row in range(len(logic.currentBoardLayout)):
+                    logic.AddChecker((move, row))
+                break
+            #print("placed")
 
         if analysis == 10000:
             text = "This should be a draw!"
@@ -87,11 +83,11 @@ while not gameOver :
             text = f"I think I'm losing by {analysis * -1}!"
         else:
             text = f"I think we are equal!"
-        
-        for row in range(len(logic.currentBoardLayout)):
-            logic.AddChecker((move, row))
+        if okayMoves < 2:
+            text += " My move was forced!"
+        text += f"{okayMoves}"
         t2 = time.time()
-        print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds")
+        print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             gameOver = True
