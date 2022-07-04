@@ -89,8 +89,6 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
                 alpha = value
             if value > -1000:
                 okayMoves += 1
-            if depth == 2:
-                print(f"{boardValue} val {num} current place {move + 1} my best move after")
             
         return value, bestCol, okayMoves
     else :

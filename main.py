@@ -20,7 +20,7 @@ screen = pygame.display.set_mode((size * 7, size * 6))
 gameOver = False
 
 botEnabled = True
-botPlaysFirst = False
+botPlaysFirst = True
 
 if botEnabled:
     bot.init(botPlaysFirst)
