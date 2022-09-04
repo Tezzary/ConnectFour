@@ -1,3 +1,6 @@
+botEnabled = True
+botPlaysFirst = True
+
 import math
 import pygame
 import logic
@@ -18,9 +21,6 @@ else:
 screen = pygame.display.set_mode((size * 7, size * 6))
 
 gameOver = False
-
-botEnabled = True
-botPlaysFirst = True
 
 if botEnabled:
     bot.init(botPlaysFirst)
@@ -64,12 +64,10 @@ while not gameOver :
         upperBound = 25
         for depth in range(2, upperBound + 1):
             analysis, move, okayMoves, callCount = bot.getBestMove(logic.currentBoardLayout, depth)
-            #print(f"{forced} {depth}")
-            if okayMoves < 2 or analysis >= 1000 or time.time() - t1 > 3:
+            if okayMoves < 2 or analysis >= 1000 or time.time() - t1 > 0.2:
                 for row in range(len(logic.currentBoardLayout)):
                     logic.AddChecker((move, row))
                 break
-            #print("placed")
 
         if analysis == 10000:
             text = "This should be a draw!"
@@ -85,7 +83,6 @@ while not gameOver :
             text = f"I think we are equal!"
         if okayMoves < 2:
             text += " My move was forced!"
-        text += f"{okayMoves}"
         t2 = time.time()
         print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
     for event in pygame.event.get() :
@@ -93,8 +90,6 @@ while not gameOver :
             gameOver = True
         elif event.type == pygame.MOUSEBUTTONDOWN :
             Clicked()
-       # elif event.type == pygame.KEYDOWN :
-        #    logic.newGame()
     
     RenderCheckers(logic.currentBoardLayout)
 

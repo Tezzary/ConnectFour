@@ -1,7 +1,6 @@
 import logic
-from copy import deepcopy, copy
-from threading import Thread
 import time
+
 playerNumber = 1
 aiNumber = 2
 
@@ -74,9 +73,6 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         value = -10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
-        '''    for num in range(0, len(columns)) :
-            if logic.checkWin(layouts[num], playerNumber):
-                return -1000, -1'''
         for num in range(0, len(columns)) :
             boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, False)
             
@@ -95,9 +91,6 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
         value = 10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
-        '''for num in range(0, len(columns)) :
-            if logic.checkWin(layouts[num], aiNumber):
-                return 1000, -1'''
         for num in range(0, len(columns)) :
             boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, True)
             
@@ -120,13 +113,3 @@ def getBestMove(boardState, depth):
     value, column, okayMoves = minimax(boardState, depth, -10000, 10000, True)
     print(f"Completed {depth} depth in {round(time.time() - t, 6)} seconds at {callCount} positions searched!")
     return value, column, okayMoves, callCount
-
-if __name__ == "__main__":
-    print(possibleMoves([
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 2, 0, 0, 0],
-    [0, 1, 1, 1, 2, 0, 0]
-    ], 2)[0])

@@ -1,7 +1,3 @@
-from copy import deepcopy
-from operator import truth
-from time import sleep
-
 player = 1
 
 currentBoardLayout = [
