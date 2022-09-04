@@ -65,16 +65,14 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
     callCount += 1
     if isTerminalNode(boardState) or depth == 0:
-        return analyseBoard(boardState, depth), -1, False
-
-    okayMoves = 0
+        return analyseBoard(boardState, depth), -1
 
     if maximizingPlayer :
         value = -10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, aiNumber)
         for num in range(0, len(columns)) :
-            boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, False)
+            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, False)
             
             if boardValue > value :
                 value = boardValue
@@ -83,16 +81,14 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
                 break
             if alpha < value:
                 alpha = value
-            if value > -1000:
-                okayMoves += 1
             
-        return value, bestCol, okayMoves
+        return value, bestCol
     else :
         value = 10000
         bestCol = -1
         layouts, columns = possibleMoves(boardState, playerNumber)
         for num in range(0, len(columns)) :
-            boardValue, move, forced = minimax(layouts[num], depth - 1, alpha, beta, True)
+            boardValue, move = minimax(layouts[num], depth - 1, alpha, beta, True)
             
             if boardValue < value :
                 value = boardValue
@@ -101,15 +97,13 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
                 break
             if beta > value:
                 beta = value
-            if boardValue < 1000:
-                okayMoves += 1
             
-        return value, bestCol, okayMoves
+        return value, bestCol
 
 def getBestMove(boardState, depth):
     global callCount
     callCount = 0
     t = time.time()
-    value, column, okayMoves = minimax(boardState, depth, -10000, 10000, True)
+    value, column = minimax(boardState, depth, -10000, 10000, True)
     print(f"Completed {depth} depth in {round(time.time() - t, 6)} seconds at {callCount} positions searched!")
-    return value, column, okayMoves, callCount
+    return value, column, callCount

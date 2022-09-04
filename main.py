@@ -63,8 +63,8 @@ while not gameOver :
         analysis = move = okayMoves = callCount = None
         upperBound = 25
         for depth in range(2, upperBound + 1):
-            analysis, move, okayMoves, callCount = bot.getBestMove(logic.currentBoardLayout, depth)
-            if okayMoves < 2 or analysis >= 1000 or time.time() - t1 > 0.2:
+            analysis, move, callCount = bot.getBestMove(logic.currentBoardLayout, depth)
+            if analysis >= 1000 or time.time() - t1 > 0.2:
                 for row in range(len(logic.currentBoardLayout)):
                     logic.AddChecker((move, row))
                 break
@@ -81,8 +81,6 @@ while not gameOver :
             text = f"I think I'm losing by {analysis * -1}!"
         else:
             text = f"I think we are equal!"
-        if okayMoves < 2:
-            text += " My move was forced!"
         t2 = time.time()
         print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
     for event in pygame.event.get() :
