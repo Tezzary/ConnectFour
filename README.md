@@ -1,10 +1,3 @@
-This is a simple implementation of a connect 4 bot in python using the minimax algorithm
+This project was one of my earlier Python projects I made, it has been featured on [Coding The Next Generation EP2](https://www.youtube.com/watch?v=qGz8FDZ7DYo) and the [Education Showcase 2022](https://www.youtube.com/watch?v=j_iM-l7aQlw&t=2753s)
 
-To run and install program:
-
-1. Download this project
-2. have Python 3 and pip installed (Download off Internet)
-3. Open terminal window in project directory
-4. For Windows: pip install -r requirements.txt For Mac: pip3 install -r requirements.txt (May be different on your computer but these work on mine, I think in lots of peoples cases the windows install also works on Mac)
-5. Run main.py file, For Windows python main.py For Mac python3 main.py (Once again may be different on your computer and the windows way to run may work on mac)
-6. Optional change bot settings in first 2 lines of main.py file
+Since this project I have been working on a machine learning AI for a fun challenge and have therefore changed many files. If you would like to see a copy of the repository, as seen in these 2 videos you can visit the "/old" folder containing the old project files.
