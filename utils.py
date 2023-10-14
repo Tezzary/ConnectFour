@@ -1,3 +1,5 @@
+import random
+import logic
 test_board = [
     [1, 0, 0, 0, 0, 0, 0],
     [2, 0, 0, 0, 0, 0, 0],
@@ -45,6 +47,26 @@ def site_to_board_format(site_format):
 
 def get_game_length(board):
     return sum([1 for x in range(7) for y in range(6) if board[y][x] != 0])
+
+def generate_random_position():
+    board = ""
+    game_length = random.randrange(0, 42)
+    col_count = [0 for x in range(7)]
+    while True:
+        if len(board) == game_length:
+            matrix_board = site_to_board_format(board)
+            if logic.checkWin(matrix_board, 1) or logic.checkWin(matrix_board, 2):
+                board = ""
+                col_count = [0 for x in range(7)]
+                #game_length = random.randrange(0, 42)
+            else:
+                break
+        col = random.randrange(0, 7)
+        if col_count[col] == 6:
+            continue
+        col_count[col] += 1
+        board += str(col + 1)
+    return board
 
 if __name__ == "__main__":
     print(test_board)

@@ -1,36 +1,26 @@
 import subprocess
 import os
-import asyncio
 import time
-async def read_output(stream):
-    output = b""
-    while True:
-        line = await stream.read(4096)
-        if not line:
-            break
-        output += line
+import utils
 
-    return output
+board = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 0, 0, 0, 0],
+    [1, 2, 1, 2, 1, 2, 1],
+    [2, 1, 2, 1, 2, 1, 2],
+    [1, 2, 1, 2, 1, 2, 1],
+]
 
-async def main():
-    directory = os.path.join("MoveGenerator", "connect4", "c4solver.exe")
+board_string = utils.board_to_site_format(board)
 
-    process = subprocess.Popen([directory, "-", "w"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, )
-    print("first")
-    
-    print("second")
-    process.stdin.write("123456712345671234567\n".encode("utf-8"))
-    process.stdin.flush()
+test_string = "73421661771566276172547361446613664475"
 
-    time.sleep(10)
-    print("Waiting for output...")
-    output = await read_output(process.stdout)
-    output = output.decode("utf-8")
+print(utils.site_to_board_format(test_string))
 
-    process.stdin.close()
-    process.stdout.close()
-    process.terminate()
-
-    print(output)
-
-asyncio.run(main())
+[[1, 0, 0, 2, 0, 1, 1], 
+ [2, 0, 0, 1, 0, 1, 1], 
+ [2, 0, 0, 2, 0, 2, 2], 
+ [1, 2, 2, 1, 1, 1, 2], 
+ [2, 1, 2, 2, 1, 1, 1], 
+ [1, 2, 2, 1, 2, 2, 1]]
