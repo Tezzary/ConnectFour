@@ -1,4 +1,4 @@
-botEnabled = False
+botEnabled = True
 botPlaysFirst = True
 
 import math
@@ -7,6 +7,7 @@ import logic
 import time
 import bot
 import platform
+from model import Agent
 
 pygame.init()
 
@@ -23,6 +24,8 @@ screen = pygame.display.set_mode((size * 7, size * 6))
 gameOver = False
 
 if botEnabled:
+    agent = Agent()
+    agent.load("agent.pt")
     bot.init(botPlaysFirst)
 
 def RenderCheckers(checkers) :
@@ -59,7 +62,13 @@ def Clicked() :
 
 while not gameOver :
     if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
-        t1 = time.time()
+        print("askign bot")
+        column, evaluation = agent.choose_column(logic.currentBoardLayout)
+        for row in range(len(logic.currentBoardLayout)):
+            logic.AddChecker((column, row))
+        print(f"Bot played column {column + 1} with evaluation {evaluation}")
+        '''t1 = time.time()
+
         analysis = move = okayMoves = callCount = None
         upperBound = 25
         for depth in range(2, upperBound + 1):
@@ -83,6 +92,7 @@ while not gameOver :
             text = f"I think we are equal!"
         t2 = time.time()
         print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
+        '''
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             gameOver = True

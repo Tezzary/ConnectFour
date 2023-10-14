@@ -1,5 +1,7 @@
 import random
 import logic
+import torch
+
 test_board = [
     [1, 0, 0, 0, 0, 0, 0],
     [2, 0, 0, 0, 0, 0, 0],
@@ -31,6 +33,27 @@ def board_to_site_format(board):
                     break
 
     return running_text
+
+def board_to_tensor(board):
+    if type(board) == str:
+        board = site_to_board_format(board)
+
+    move_count = get_game_length(board)
+    if move_count % 2 == 0:
+        current_player = 1
+    else:
+        current_player = 2
+    tensor = torch.zeros(42, dtype=torch.float)
+    for y in range(6):
+        for x in range(7):
+            index = 7 * y + x
+            if board[y][x] == current_player:
+                tensor[index] = 1
+            elif board[y][x] == 0:
+                tensor[index] = 0
+            else:
+                tensor[index] = -1
+    return tensor
 
 def site_to_board_format(site_format):
     board = [[0 for x in range(7)] for y in range(6)]
