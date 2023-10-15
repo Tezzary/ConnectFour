@@ -84,15 +84,15 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
 
 class Player():
     def __init__(self):
-        pass
         self.thread = None
         self.results = None
+
     def _calculate_move(self, board, time_limit):
         init(board)
         move = None
         max_depth = 25
         t1 = time.time()
-        for depth in range(1, max_depth + 1):
+        for depth in range(2, max_depth + 1):
             analysis, move = minimax(board, depth, -10000, 10000, True)
             if analysis >= 1000 or time.time() - t1 > time_limit:
                 break
@@ -104,10 +104,11 @@ class Player():
             self.thread = Thread(target=self._calculate_move, args=(board, time_limit))
             self.thread.start()
             return -1, -1
+        if self.results is None:
+            return -1, -1
         else:
-            if self.thread.is_alive():
-                return -1, -1
-            else:
-                move, depth = self.results
-                self.thread = None
-                return move, depth
+            move, depth = self.results
+            self.thread.join()
+            self.thread = None
+            self.results = None
+            return move, depth

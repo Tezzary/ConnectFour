@@ -7,6 +7,12 @@ import platform
 import model
 import minimaxmodel
 import player
+import os
+
+simulation_mode = True
+gui_enabled = True
+
+start_move = 0
 
 possible_players = {
     "Player" : player,
@@ -19,22 +25,43 @@ possible_players = {
 wanted_players = ["NeuralMMBot", "MMBot"]
 
 players = []
+scores = [0, 0, 0]
+
+start_time = time.time()
+
+if simulation_mode:
+    start_move = 8
+    simulation_game_count = 500
+    simulation_participants = ["NeuralBot", "NeuralMMBot", "MMBot"]
+    matches = []
+    for i in range(len(simulation_participants)):
+        for j in range(i + 1, len(simulation_participants)):
+            matches.append([simulation_participants[i], simulation_participants[j]])
+
+    matches_copy = matches.copy()
+    for i in range(len(matches_copy)):
+        matches_copy[i] = matches_copy[i][::-1]
+    matches = matches + matches_copy
+
+    wanted_players = matches[0]
+    matches = matches[1:]
+
 for i in range(2):
     players.append(possible_players[wanted_players[i]].Player())
 
-scores = [0, 0]
 
-pygame.init()
 
 size = 0
 
-os = platform.system()
+operating_system = platform.system()
 
-if os == "Darwin":
+if operating_system == "Darwin":
     size = 140
 else:
     size = 160
-screen = pygame.display.set_mode((size * 10, size * 6))
+if gui_enabled:
+    pygame.init()
+    screen = pygame.display.set_mode((size * 10, size * 6))
 
 gameOver = False
 
@@ -56,81 +83,84 @@ def RenderCheckers(checkers) :
 
 def RenderScoreboard():
     offset = (size * 8.5, size * 6 / 2)
-    font = pygame.font.Font('freesansbold.ttf', int(size / 4))
+    font = pygame.font.Font('freesansbold.ttf', int(size / 5))
     text = font.render(f"{wanted_players[0]} - {wanted_players[1]}", True, (255, 255, 255))
     textRect = text.get_rect()
-    textRect.center = (offset[0], offset[1])
+    textRect.center = (offset[0], offset[1] - size / 4)
     screen.blit(text, textRect)
-    text = font.render(f"{scores[0]} - {scores[1]}", True, (255, 255, 255))
+    text = font.render(f"{scores[0]} - {scores[1]} - {scores[2]}", True, (255, 255, 255))
     textRect = text.get_rect()
-    textRect.center = (offset[0], offset[1] + size / 2)
+    textRect.center = (offset[0], offset[1] + size / 4)
     screen.blit(text, textRect)
+
+def restart_simulation():
+    global scores, players, wanted_players, matches
+
+    if len(matches) == 0:
+        print("Simulation finished")
+        print(f"Simulation took {round(time.time() - start_time, 2)} seconds")
+        exit()
+    if not os.path.exists("SimulationResults"):
+        os.makedirs("SimulationResults")
+    path = os.path.join("SimulationResults", f"results-{start_time}.txt")
+    with open(path, "a") as results:
+        results.write(f"{wanted_players[0]} - {wanted_players[1]}\n")
+        results.write(f"{scores[0]} - {scores[1]} - {scores[2]}\n")
+        results.write(f"Simulation took {round(time.time() - start_time, 2)} seconds\n")
+
+    
+    
+    wanted_players = matches[0]
+    matches = matches[1:]
+    scores = [0, 0, 0]
+    players = []
+    for i in range(2):
+        players.append(possible_players[wanted_players[i]].Player())
+
+games_played = 0
 while not gameOver :
-    '''
-    if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
-        print("askign bot")
-        column, evaluation = agent.choose_column(logic.currentBoardLayout)
-        for row in range(len(logic.currentBoardLayout)):
-            logic.AddChecker((column, row))
-        print(f"Bot played column {column + 1} with evaluation {evaluation}")
-        t1 = time.time()
-
-        analysis = move = okayMoves = callCount = None
-        upperBound = 25
-        for depth in range(2, upperBound + 1):
-            analysis, move, callCount = bot.getBestMove(logic.currentBoardLayout, depth)
-            if analysis >= 1000 or time.time() - t1 > 0.2:
-                for row in range(len(logic.currentBoardLayout)):
-                    logic.AddChecker((move, row))
-                break
-
-        if analysis == 10000:
-            text = "This should be a draw!"
-        elif analysis >= 1000:
-            text = "I have a guaranteed win!"
-        elif analysis <= -1000:
-            text = "If you play perfectly you have a guaranteed win!"
-        elif analysis > 0:
-            text = f"I think I'm winning by {analysis}!"
-        elif analysis < 0:
-            text = f"I think I'm losing by {analysis * -1}!"
-        else:
-            text = f"I think we are equal!"
-        t2 = time.time()
-        print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
-        '''
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT :
-            gameOver = True
-
-    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
-
-    if depth != -1:
-        print(f"Player {logic.player} played column {column + 1} with depth {depth}")
+    if gui_enabled:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT :
+                gameOver = True
+    else:
+        events = []
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 0.2)
+    #print(logic.player)
+    #print(column)
+    #if depth != -1:
+        #print(f"Player {logic.player} played column {column + 1} with depth {depth}")
 
     if column != -1:
         for row in range(len(logic.currentBoardLayout)):
             logic.AddChecker((column, row))
-
-    RenderCheckers(logic.currentBoardLayout)
-    RenderScoreboard()
-    pygame.display.update()
-
-    if logic.checkWin(logic.currentBoardLayout, 1) or logic.checkWin(logic.currentBoardLayout, 2):
-        pos1, pos2, pos3, pos4 = logic.winPositions(logic.currentBoardLayout)
-        previous_player = 1 if logic.player == 2 else 2
-        scores[previous_player - 1] += 1
-        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos1[1] * size, size / 2 + pos1[0] * size), size * 0.45)
-        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos2[1] * size, size / 2 + pos2[0] * size), size * 0.45)
-        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos3[1] * size, size / 2 + pos3[0] * size), size * 0.45)
-        pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos4[1] * size, size / 2 + pos4[0] * size), size * 0.45)
+    if gui_enabled:
+        RenderCheckers(logic.currentBoardLayout)
+        RenderScoreboard()
         pygame.display.update()
-        time.sleep(5)
-        logic.newGame()
+
+    result = [logic.checkWin(logic.currentBoardLayout, 1), logic.check_draw(logic.currentBoardLayout), logic.checkWin(logic.currentBoardLayout, 2)]
+    if any(result):
+        games_played += 1
+        scores[result.index(True)] += 1
+        if gui_enabled and (result[0] or result[2]):
+            pos1, pos2, pos3, pos4 = logic.winPositions(logic.currentBoardLayout)
+            pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos1[1] * size, size / 2 + pos1[0] * size), size * 0.45)
+            pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos2[1] * size, size / 2 + pos2[0] * size), size * 0.45)
+            pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos3[1] * size, size / 2 + pos3[0] * size), size * 0.45)
+            pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos4[1] * size, size / 2 + pos4[0] * size), size * 0.45)
+            pygame.display.update()
+            if not simulation_mode:
+                time.sleep(5)
+        if(simulation_mode and sum(scores) == simulation_game_count):
+            restart_simulation()
+        logic.newGame(start_move)
+        print(f"Game {games_played} finished")
+        print(f"Starting new game between {wanted_players[0]} and {wanted_players[1]}")
 
     time.sleep(0.01)
 
-    
-pygame.quit()
+if gui_enabled:
+    pygame.quit()
 

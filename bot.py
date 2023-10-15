@@ -117,10 +117,11 @@ class Player():
             self.thread = Thread(target=self._calculate_move, args=(board, time_limit))
             self.thread.start()
             return -1, -1
+        if self.results is None:
+            return -1, -1
         else:
-            if self.thread.is_alive():
-                return -1, -1
-            else:
-                move, depth = self.results
-                self.thread = None
-                return move, depth
+            move, depth = self.results
+            self.thread.join()
+            self.thread = None
+            self.results = None
+            return move, depth

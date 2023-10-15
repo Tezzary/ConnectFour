@@ -1,8 +1,10 @@
 import os
 import subprocess
 import utils
+import logic
 import multiprocessing
 import torch
+import random
 
 folder = "TrainingData"
 
@@ -42,7 +44,8 @@ def generate_data(index, num_samples):
 
     running_text = ""
     for x in range(num_samples):
-        board = utils.generate_random_position()
+        game_length = random.randrange(0, 42)
+        board = logic.generate_random_position(game_length)
         evaluation = evaluate_board(process, board)
         
         running_text += board + " " + str(evaluation) + "\n"

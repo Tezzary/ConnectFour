@@ -1,3 +1,5 @@
+import random
+import utils
 player = 1
 
 currentBoardLayout = [
@@ -31,19 +33,31 @@ def AddChecker(position) :
     
     changeTurn()
 
-def newGame(rows = 6, columns = 7) :
+def newGame(game_length=0, rows = 6, columns = 7) :
     global currentBoardLayout 
 
     global player
     player = 1
-    currentBoardLayout = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0]
-    ]
+    currentBoardLayout = utils.site_to_board_format(generate_random_position(game_length))
+
+def generate_random_position(game_length):
+    board = ""
+    col_count = [0 for x in range(7)]
+    while True:
+        if len(board) == game_length:
+            matrix_board = utils.site_to_board_format(board)
+            if checkWin(matrix_board, 1) or checkWin(matrix_board, 2):
+                board = ""
+                col_count = [0 for x in range(7)]
+                #game_length = random.randrange(0, 42)
+            else:
+                break
+        col = random.randrange(0, 7)
+        if col_count[col] == 6:
+            continue
+        col_count[col] += 1
+        board += str(col + 1)
+    return board
 
 def checkWin(boardState, player) :
     for row in range(0, rows) :
@@ -89,3 +103,9 @@ def winPositions(boardState) :
                     return (row, column), (row + 1, column - 1), (row + 2, column - 2), (row + 3, column - 3), 
     return 0, 0, 0, 0
 
+def check_draw(boardState):
+    for row in range(0, rows):
+        for column in range(0, columns):
+            if boardState[row][column] == 0:
+                return False
+    return True
