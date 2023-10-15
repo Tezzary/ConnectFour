@@ -34,6 +34,22 @@ def board_to_site_format(board):
 
     return running_text
 
+def possibleMoves(boardState, player) :
+
+    layouts = []
+    columns = []
+    for row in range(6) :
+        for column in range(7) :
+            if boardState[row][column] == 0 and (row == logic.rows - 1 or boardState[row + 1][column] != 0) :
+                copiedBoard = []
+                for r in boardState:
+                    copiedBoard.append(r.copy())
+                copiedBoard[row][column] = player
+                layouts.append(copiedBoard)
+                columns.append(column)
+
+    return layouts, columns
+
 def board_to_tensor(board):
     if type(board) == str:
         board = site_to_board_format(board)

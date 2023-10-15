@@ -1,20 +1,15 @@
 import logic
 import time
 import utils 
+import model
 from threading import Thread
 playerNumber = 1
 aiNumber = 2
 
 callCount = 0
 
-scoreMatrix = [
-    [1, 2, 3, 4, 3, 2, 1],
-    [1, 2, 3.5, 4.5, 3.5, 2, 1],
-    [1, 3, 4, 5, 4, 3, 1],
-    [1, 3, 4, 5, 4, 3, 1],
-    [1, 2, 3.5, 4.5, 3.5, 2, 1],
-    [1, 2, 3, 4, 3, 2, 1]
-    ]
+agent = model.Agent()
+agent.load("agentv7-1.2l.pt")
 
 def init(board) :
     global playerNumber
@@ -32,17 +27,17 @@ def analyseBoard(boardState, depth) :
         return 1000 + depth
     if logic.checkWin(boardState, playerNumber):
         return -1000 - depth
-    playerScore = 0
-    aiScore = 0
+    board_length = utils.get_game_length(boardState)
+    if board_length % 2 == 0:
+        current_player = 1
+    else:
+        current_player = 2
 
-    for r in range(len(boardState)):
-        for c in range(len(boardState[0])):
-            if boardState[r][c] == playerNumber:
-                playerScore += scoreMatrix[r][c]
-            elif boardState[r][c] == aiNumber:
-                aiScore+= scoreMatrix[r][c]
-
-    return aiScore - playerScore
+    evaluation = agent.evaluate(utils.board_to_tensor(boardState)).item()
+    if current_player == aiNumber:
+        return evaluation
+    else:
+        return -evaluation
 
 
 def isTerminalNode(boardState) :
@@ -87,25 +82,17 @@ def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
             
         return value, bestCol
 
-def getBestMove(boardState, depth):
-    global callCount
-    callCount = 0
-    t = time.time()
-    value, column = minimax(boardState, depth, -10000, 10000, True)
-    #print(f"Completed {depth} depth in {round(time.time() - t, 6)} seconds at {callCount} positions searched!")
-    return value, column, callCount
-
 class Player():
     def __init__(self):
+        pass
         self.thread = None
         self.results = None
-
     def _calculate_move(self, board, time_limit):
         init(board)
         move = None
         max_depth = 25
         t1 = time.time()
-        for depth in range(2, max_depth + 1):
+        for depth in range(1, max_depth + 1):
             analysis, move = minimax(board, depth, -10000, 10000, True)
             if analysis >= 1000 or time.time() - t1 > time_limit:
                 break

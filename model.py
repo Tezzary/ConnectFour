@@ -2,22 +2,27 @@ import torch
 import utils
 import bot
 
-
 class Network(torch.nn.Module):
     def __init__(self):
         super(Network, self).__init__()
-        self.fc1 = torch.nn.Linear(42, 64)
-        self.fc2 = torch.nn.Linear(64, 64)
-        self.fc3 = torch.nn.Linear(64, 64)
-        self.fc4 = torch.nn.Linear(64, 64)
-        self.fc5 = torch.nn.Linear(64, 1)
+        self.fc1 = torch.nn.Linear(42, 256)
+        self.fc2 = torch.nn.Linear(256, 256)
+        self.fc3 = torch.nn.Linear(256, 256)
+        self.fc4 = torch.nn.Linear(256, 256)
+        self.fc5 = torch.nn.Linear(256, 256)
+        self.fc6 = torch.nn.Linear(256, 128)
+        self.fc7 = torch.nn.Linear(128, 64)
+        self.fc8 = torch.nn.Linear(64, 1)
 
     def forward(self, x):
         x = torch.nn.functional.relu(self.fc1(x))
         x = torch.nn.functional.relu(self.fc2(x))
         x = torch.nn.functional.relu(self.fc3(x))
         x = torch.nn.functional.relu(self.fc4(x))
-        return self.fc5(x)
+        x = torch.nn.functional.relu(self.fc5(x))
+        x = torch.nn.functional.relu(self.fc6(x))
+        x = torch.nn.functional.relu(self.fc7(x))
+        return self.fc8(x)
 
     
 
@@ -36,7 +41,7 @@ class Agent():
             current_player = 1
         else:
             current_player = 2
-        possible_boards, possible_columns = bot.possibleMoves(board, current_player)
+        possible_boards, possible_columns = utils.possibleMoves(board, current_player)
 
         best_column = -1
         best_evaluation = -1000000
@@ -54,4 +59,12 @@ class Agent():
 
     def evaluate(self, board):
         return self.network(board)
+    
+class Player():
+    def __init__(self):
+        self.agent = Agent()
+        self.agent.load("agentv8-1.1.pt")
+    def make_move(self, board, events, size, time_limit):
+        return self.agent.choose_column(board)[0], -1
+            
 

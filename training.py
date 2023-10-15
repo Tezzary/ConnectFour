@@ -2,15 +2,15 @@ import torch
 import os
 import utils
 from model import Agent
-import plot
+#import plot
 
-num_epochs = 100
-batch_size = 8192
+num_epochs = 1000
+batch_size = 16384
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 agent = Agent(device)
-optimizer = torch.optim.Adam(agent.network.parameters(), lr=0.0001)
+optimizer = torch.optim.Adam(agent.network.parameters(), lr=0.001)
 criterion = torch.nn.MSELoss()
 
 folder = "TrainingData"
@@ -50,7 +50,7 @@ for epoch in range(num_epochs):
         #plot.plot(loss.item())
     print("Epoch " + str(epoch) + " Average Loss: " + str(sum(epoch_losses) / len(epoch_losses)))
     print("Epoch contained " + str(len(epoch_losses)) + " batches")
-    plot.plot(sum(epoch_losses) / len(epoch_losses))
+    #plot.plot(sum(epoch_losses) / len(epoch_losses))
     agent.save(f"agent{epoch}.pt")
 
 test_losses = []

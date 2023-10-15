@@ -1,13 +1,28 @@
-botEnabled = True
-botPlaysFirst = True
-
 import math
 import pygame
 import logic
 import time
 import bot
 import platform
-from model import Agent
+import model
+import minimaxmodel
+import player
+
+possible_players = {
+    "Player" : player,
+    "NeuralBot" : model,
+    "MMBot" : bot,
+    "NeuralMMBot" : minimaxmodel,
+    "PerfectBot" : 4,
+}
+
+wanted_players = ["NeuralMMBot", "MMBot"]
+
+players = []
+for i in range(2):
+    players.append(possible_players[wanted_players[i]].Player())
+
+scores = [0, 0]
 
 pygame.init()
 
@@ -19,14 +34,9 @@ if os == "Darwin":
     size = 140
 else:
     size = 160
-screen = pygame.display.set_mode((size * 7, size * 6))
+screen = pygame.display.set_mode((size * 10, size * 6))
 
 gameOver = False
-
-if botEnabled:
-    agent = Agent()
-    agent.load("agent.pt")
-    bot.init(botPlaysFirst)
 
 def RenderCheckers(checkers) :
     screen.fill((0, 0, 255))
@@ -44,30 +54,26 @@ def RenderCheckers(checkers) :
 
             pygame.draw.circle(screen, color, (size / 2 + x * size, size / 2 + y * size), size * 0.45)
 
-def Clicked() :
-    closest = [math.inf, 0, 0]
-    mousePos = pygame.mouse.get_pos()
-    for x in range(7) :
-        deltaX = size / 2 + x * size - mousePos[0]
-        for y in range(6) :
-            deltaY = size / 2 + y * size - mousePos[1]
-
-            dist = math.sqrt(deltaX ** 2 + deltaY ** 2)
-
-            if dist < closest[0] :
-                closest[0] = dist
-                closest[1] = x
-                closest[2] = y
-    logic.AddChecker((closest[1], closest[2]))
-
+def RenderScoreboard():
+    offset = (size * 8.5, size * 6 / 2)
+    font = pygame.font.Font('freesansbold.ttf', int(size / 4))
+    text = font.render(f"{wanted_players[0]} - {wanted_players[1]}", True, (255, 255, 255))
+    textRect = text.get_rect()
+    textRect.center = (offset[0], offset[1])
+    screen.blit(text, textRect)
+    text = font.render(f"{scores[0]} - {scores[1]}", True, (255, 255, 255))
+    textRect = text.get_rect()
+    textRect.center = (offset[0], offset[1] + size / 2)
+    screen.blit(text, textRect)
 while not gameOver :
+    '''
     if (logic.player == 2 and not botPlaysFirst or logic.player == 1 and botPlaysFirst) and botEnabled:
         print("askign bot")
         column, evaluation = agent.choose_column(logic.currentBoardLayout)
         for row in range(len(logic.currentBoardLayout)):
             logic.AddChecker((column, row))
         print(f"Bot played column {column + 1} with evaluation {evaluation}")
-        '''t1 = time.time()
+        t1 = time.time()
 
         analysis = move = okayMoves = callCount = None
         upperBound = 25
@@ -93,18 +99,28 @@ while not gameOver :
         t2 = time.time()
         print(f"{text} After searching at a {depth} depth for {round(t2 - t1, 2)} seconds with {callCount} positions searched!")
         '''
-    for event in pygame.event.get() :
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT :
             gameOver = True
-        elif event.type == pygame.MOUSEBUTTONDOWN :
-            Clicked()
-    
-    RenderCheckers(logic.currentBoardLayout)
 
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
+
+    if depth != -1:
+        print(f"Player {logic.player} played column {column + 1} with depth {depth}")
+
+    if column != -1:
+        for row in range(len(logic.currentBoardLayout)):
+            logic.AddChecker((column, row))
+
+    RenderCheckers(logic.currentBoardLayout)
+    RenderScoreboard()
     pygame.display.update()
 
     if logic.checkWin(logic.currentBoardLayout, 1) or logic.checkWin(logic.currentBoardLayout, 2):
         pos1, pos2, pos3, pos4 = logic.winPositions(logic.currentBoardLayout)
+        previous_player = 1 if logic.player == 2 else 2
+        scores[previous_player - 1] += 1
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos1[1] * size, size / 2 + pos1[0] * size), size * 0.45)
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos2[1] * size, size / 2 + pos2[0] * size), size * 0.45)
         pygame.draw.circle(screen, (255, 255, 255), (size / 2 + pos3[1] * size, size / 2 + pos3[0] * size), size * 0.45)
@@ -113,7 +129,7 @@ while not gameOver :
         time.sleep(5)
         logic.newGame()
 
-    time.sleep(0.1)
+    time.sleep(0.01)
 
     
 pygame.quit()
