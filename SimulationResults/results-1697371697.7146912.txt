@@ -1,6 +1,0 @@
-NeuralBot - NeuralMMBot
-30 - 9 - 41
-Simulation took 317.61 seconds
-NeuralBot - MMBot
-53 - 3 - 24
-Simulation took 577.12 seconds

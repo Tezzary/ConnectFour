@@ -1,0 +1,36 @@
+Statistics:
+
+Simulation took 1838.33s
+Time limit: 0.01s
+Games played: 3000
+
+Player Results:
+
++-------------+------+-------+--------+-------+
+|    Player   | Wins | Draws | Losses | Score |
++-------------+------+-------+--------+-------+
+| NeuralMMBot | 1277 |  152  |  571   |  706  |
+|  NeuralBot  | 938  |  187  |  875   |   63  |
+|    MMBot    | 548  |  135  |  1317  |  -769 |
++-------------+------+-------+--------+-------+
+
+Match Results:
+
+MMBot - NeuralMMBot
+190 - 34 - 276
+
+MMBot - NeuralBot
+225 - 49 - 226
+
+NeuralMMBot - NeuralBot
+359 - 55 - 86
+
+NeuralMMBot - MMBot
+445 - 16 - 39
+
+NeuralBot - MMBot
+370 - 36 - 94
+
+NeuralBot - NeuralMMBot
+256 - 47 - 197
+

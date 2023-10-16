@@ -32,6 +32,8 @@ def analyseBoard(boardState, depth) :
         return 1000 + depth
     if logic.checkWin(boardState, playerNumber):
         return -1000 - depth
+    if logic.check_draw(boardState):
+        return 0
     playerScore = 0
     aiScore = 0
 
@@ -46,7 +48,7 @@ def analyseBoard(boardState, depth) :
 
 
 def isTerminalNode(boardState) :
-    return len(utils.possibleMoves(boardState, 1)) == 0 or logic.checkWin(boardState, playerNumber) or logic.checkWin(boardState, aiNumber)
+    return len(utils.possibleMoves(boardState, 1)) == 0 or logic.checkWin(boardState, playerNumber) or logic.checkWin(boardState, aiNumber) or logic.check_draw(boardState)
 
 def minimax(boardState, depth, alpha, beta, maximizingPlayer) :
     global callCount
