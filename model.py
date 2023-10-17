@@ -32,8 +32,8 @@ class Agent():
     def save(self, path):
         torch.save(self.network.state_dict(), path)
 
-    def load(self, path):
-        self.network.load_state_dict(torch.load(path))
+    def load(self, path, map_location):
+        self.network.load_state_dict(torch.load(path, map_location=map_location))
     
     def choose_column(self, board):
         game_length = utils.get_game_length(board)
@@ -63,7 +63,7 @@ class Agent():
 class Player():
     def __init__(self):
         self.agent = Agent()
-        self.agent.load("agentv8-1.1.pt")
+        self.agent.load("agentv8-1.1.pt", map_location="cpu")
     def make_move(self, board, events, size, time_limit):
         return self.agent.choose_column(board)[0], -1
             

@@ -8,10 +8,11 @@ import model
 import minimaxmodel
 import player
 import os
-from results import save_results
 
-simulation_mode = True
-gui_enabled = True
+simulation_mode = False
+gui_enabled = True 
+
+start_move = 0
 
 possible_players = {
     "Player" : player,
@@ -21,32 +22,17 @@ possible_players = {
     "PerfectBot" : 4,
 }
 
-wanted_players = ["MMBot", "NeuralMMBot"]
-time_limit = 0.01
+wanted_players = ["NeuralMMBot", "Player"]
 
-simulation_participants = ["MMBot", "NeuralMMBot", "NeuralBot"]
-time_limits = [0.01, 0.1, 0.5, 1, 3]
-start_move = 0
-
-match_results = []
 players = []
-matches = []
 scores = [0, 0, 0]
 
 start_time = time.time()
 
-def setup_simulation():
-    global start_move, time_limit, wanted_players, simulation_game_count, matches, time_limits, start_time, scores, match_results, players
-    match_results = []
-    start_time = time.time()
+if simulation_mode:
     start_move = 8
     simulation_game_count = 500
-    if len(time_limits) == 0:
-        print("Simulation finished")
-        print(f"Simulation took {round(time.time() - start_time, 2)} seconds")
-        exit()
-    time_limit = time_limits[0]
-    time_limits.pop(0)
+    simulation_participants = ["NeuralBot", "NeuralMMBot", "MMBot"]
     matches = []
     for i in range(len(simulation_participants)):
         for j in range(i + 1, len(simulation_participants)):
@@ -59,13 +45,6 @@ def setup_simulation():
 
     wanted_players = matches[0]
     matches = matches[1:]
-
-    scores = [0, 0, 0]
-    players = []
-    for i in range(2):
-        players.append(possible_players[wanted_players[i]].Player())
-if simulation_mode:
-    setup_simulation()
 
 for i in range(2):
     players.append(possible_players[wanted_players[i]].Player())
@@ -115,25 +94,28 @@ def RenderScoreboard():
     screen.blit(text, textRect)
 
 def restart_simulation():
-    global scores, players, wanted_players, matches, match_results
+    global scores, players, wanted_players, matches
 
-    match_results.append({
-            "players" : wanted_players.copy(),
-            "scores" : scores.copy(),
-        })
-    
     if len(matches) == 0:
         print("Simulation finished")
         print(f"Simulation took {round(time.time() - start_time, 2)} seconds")
-        save_results(match_results, start_time, time_limit)
-        setup_simulation()
-    else:
-        wanted_players = matches[0]
-        matches = matches[1:]
-        scores = [0, 0, 0]
-        players = []
-        for i in range(2):
-            players.append(possible_players[wanted_players[i]].Player())
+        exit()
+    if not os.path.exists("SimulationResults"):
+        os.makedirs("SimulationResults")
+    path = os.path.join("SimulationResults", f"results-{start_time}.txt")
+    with open(path, "a") as results:
+        results.write(f"{wanted_players[0]} - {wanted_players[1]}\n")
+        results.write(f"{scores[0]} - {scores[1]} - {scores[2]}\n")
+        results.write(f"Simulation took {round(time.time() - start_time, 2)} seconds\n")
+
+    
+    
+    wanted_players = matches[0]
+    matches = matches[1:]
+    scores = [0, 0, 0]
+    players = []
+    for i in range(2):
+        players.append(possible_players[wanted_players[i]].Player())
 
 games_played = 0
 while not gameOver :
@@ -144,7 +126,7 @@ while not gameOver :
                 gameOver = True
     else:
         events = []
-    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, time_limit)
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
     #print(logic.player)
     #print(column)
     #if depth != -1:

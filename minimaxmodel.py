@@ -9,7 +9,7 @@ aiNumber = 2
 callCount = 0
 
 agent = model.Agent()
-agent.load("agentv7-1.2l.pt")
+agent.load("agentv8-1.1.pt", map_location="cpu")
 
 def init(board) :
     global playerNumber
