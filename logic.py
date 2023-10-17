@@ -2,14 +2,16 @@ import random
 import utils
 player = 1
 
-currentBoardLayout = [
+'''currentBoardLayout = [
     [2, 0, 1, 1, 1, 0, 0],
     [1, 0, 2, 2, 2, 0, 0],
     [1, 0, 1, 1, 1, 0, 0],
     [2, 0, 1, 2, 2, 0, 2],
     [2, 2, 2, 1, 1, 0, 2],
     [2, 1, 1, 2, 1, 2, 1]
-]
+]'''
+currentBoardLayout = [[0 for x in range(7)] for y in range(6)]
+print(currentBoardLayout)
 
 rows = len(currentBoardLayout)
 columns = len(currentBoardLayout[0])

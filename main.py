@@ -8,6 +8,7 @@ import model
 import minimaxmodel
 import player
 import os
+import perfectbot
 
 simulation_mode = False
 gui_enabled = True 
@@ -19,10 +20,10 @@ possible_players = {
     "NeuralBot" : model,
     "MMBot" : bot,
     "NeuralMMBot" : minimaxmodel,
-    "PerfectBot" : 4,
+    "PerfectBot" : perfectbot,
 }
 
-wanted_players = ["NeuralMMBot", "Player"]
+wanted_players = ["NeuralMMBot", "PerfectBot"]
 
 players = []
 scores = [0, 0, 0]
@@ -126,7 +127,8 @@ while not gameOver :
                 gameOver = True
     else:
         events = []
-    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
+    print(logic.currentBoardLayout)
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 4)
     #print(logic.player)
     #print(column)
     #if depth != -1:
@@ -140,7 +142,7 @@ while not gameOver :
         RenderScoreboard()
         pygame.display.update()
 
-    result = [logic.checkWin(logic.currentBoardLayout, 1), logic.check_draw(logic.currentBoardLayout), logic.checkWin(logic.currentBoardLayout, 2)]
+    result = [logic.checkWin(logic.currentBoardLayout, 1), logic.check_draw(logic.currentBoardLayout), logic.checkWin(logic.currentBoardLayout, 1)]
     if any(result):
         games_played += 1
         scores[result.index(True)] += 1
