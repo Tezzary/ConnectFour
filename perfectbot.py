@@ -25,8 +25,15 @@ def pick_move(process, board):
     best_move = -1
     best_evaluation = -1000000
     for i in range(len(valid_boards)):
+       
         print(valid_boards[i])
-        board = utils.board_to_site_format(valid_boards[i])
+        board = valid_boards[i]
+        if (logic.checkWin(board, logic.player)):
+            return valid_columns[i], 43 - utils.get_game_length(board)
+        if (logic.check_draw(board)):
+            return valid_columns[i], 0
+        board = utils.board_to_site_format(board)
+        
         print(board)
         evaluation = -evaluate_board(process, board)
         if evaluation > best_evaluation:

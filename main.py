@@ -13,7 +13,7 @@ import perfectbot
 simulation_mode = False
 gui_enabled = True 
 
-start_move = 0
+start_move = 8
 
 possible_players = {
     "Player" : player,
@@ -127,7 +127,7 @@ while not gameOver :
                 gameOver = True
     else:
         events = []
-    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 4)
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
     #print(depth)
     #print(logic.player)
     #print(column)
