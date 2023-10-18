@@ -23,7 +23,7 @@ possible_players = {
     "PerfectBot" : perfectbot,
 }
 
-wanted_players = ["NeuralMMBot", "PerfectBot"]
+wanted_players = ["NeuralMMBot", "Player"]
 
 players = []
 scores = [0, 0, 0]
@@ -127,12 +127,12 @@ while not gameOver :
                 gameOver = True
     else:
         events = []
-    print(logic.currentBoardLayout)
     column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 4)
+    #print(depth)
     #print(logic.player)
     #print(column)
-    #if depth != -1:
-        #print(f"Player {logic.player} played column {column + 1} with depth {depth}")
+    if depth != -1:
+        print(f"Player {logic.player} played column {column + 1} with depth {depth}")
 
     if column != -1:
         for row in range(len(logic.currentBoardLayout)):

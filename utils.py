@@ -12,7 +12,6 @@ def board_to_site_format(board):
     current_player = 1
     running_text = ""
     game_length = get_game_length(board)
-    print(game_length)
     indexes_used = []
     while True:
         print(indexes_used)
@@ -28,6 +27,8 @@ def board_to_site_format(board):
                     current_player = 2 if current_player == 1 else 1
                     running_text += str(x + 1)
                     indexes_used.append(7 * temp + x)
+                else:
+                    continue
 
     return running_text
 
