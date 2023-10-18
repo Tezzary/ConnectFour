@@ -13,22 +13,35 @@ def board_to_site_format(board):
     running_text = ""
     game_length = get_game_length(board)
     indexes_used = []
+    last_placed = -1
     while True:
-        print(indexes_used)
+        placed = False
+        print(running_text)
         if len(running_text) == game_length:
             break
+        
         for x in range(7):
             for y in range(6):
                 temp = 5 - y
-                index_exists = (7 * temp + x) in indexes_used
+                index = 7 * temp + x
+                if index == last_placed:
+                    break
+                index_exists = index in indexes_used
                 if index_exists:
                     continue
+                
                 if board[temp][x] == current_player:
                     current_player = 2 if current_player == 1 else 1
                     running_text += str(x + 1)
-                    indexes_used.append(7 * temp + x)
+                    indexes_used.append(index)
+                    last_placed = -1
+                    placed = True
                 else:
-                    continue
+                    break
+        if placed == False:
+            last_placed = indexes_used.pop()
+            current_player = 1 if current_player == 2 else 2
+            running_text = running_text[:-1]
 
     return running_text
 

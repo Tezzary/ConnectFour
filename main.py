@@ -23,7 +23,7 @@ possible_players = {
     "PerfectBot" : perfectbot,
 }
 
-wanted_players = ["NeuralMMBot", "Player"]
+wanted_players = ["NeuralMMBot", "PerfectBot"]
 
 players = []
 scores = [0, 0, 0]

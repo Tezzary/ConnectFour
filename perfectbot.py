@@ -20,7 +20,8 @@ def evaluate_board(process, board):
 directory = os.path.join("MoveGenerator", "connect4", "c4solver")
 
 def pick_move(process, board):
-    valid_boards, valid_columns = utils.possibleMoves(board, 1)
+    current_player = logic.player
+    valid_boards, valid_columns = utils.possibleMoves(board, current_player)
     best_move = -1
     best_evaluation = -1000000
     for i in range(len(valid_boards)):
@@ -38,4 +39,5 @@ class Player:
     def __init__(self):
         self.process = subprocess.Popen([directory, "-", "w"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
     def make_move(self, board, events, size, player):
+        print(board)
         return pick_move(self.process, board)
