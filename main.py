@@ -108,8 +108,6 @@ def restart_simulation():
         results.write(f"{wanted_players[0]} - {wanted_players[1]}\n")
         results.write(f"{scores[0]} - {scores[1]} - {scores[2]}\n")
         results.write(f"Simulation took {round(time.time() - start_time, 2)} seconds\n")
-
-    
     
     wanted_players = matches[0]
     matches = matches[1:]
@@ -127,7 +125,7 @@ while not gameOver :
                 gameOver = True
     else:
         events = []
-    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 1)
+    column, depth = players[logic.player - 1].make_move(logic.currentBoardLayout, events, size, 0.01)
     #print(depth)
     #print(logic.player)
     #print(column)
@@ -142,7 +140,7 @@ while not gameOver :
         RenderScoreboard()
         pygame.display.update()
 
-    result = [logic.checkWin(logic.currentBoardLayout, 1), logic.check_draw(logic.currentBoardLayout), logic.checkWin(logic.currentBoardLayout, 1)]
+    result = [logic.checkWin(logic.currentBoardLayout, 1), logic.check_draw(logic.currentBoardLayout), logic.checkWin(logic.currentBoardLayout, 2)]
     if any(result):
         games_played += 1
         scores[result.index(True)] += 1

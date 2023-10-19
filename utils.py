@@ -1,19 +1,19 @@
 import random
 import torch
 
-test_board = [[0, 0, 0, 0, 0, 0, 0], 
-              [0, 0, 0, 0, 0, 0, 0], 
-              [0, 0, 0, 0, 0, 0, 0], 
-              [0, 0, 0, 0, 0, 0, 0], 
-              [0, 0, 0, 2, 0, 0, 0], 
-              [1, 0, 0, 1, 0, 0, 0]]
+test_board = [[0, 0, 0, 0, 2, 0, 0], 
+              [0, 0, 0, 0, 2, 0, 0], 
+              [0, 0, 0, 0, 2, 0, 0], 
+              [0, 0, 0, 0, 1, 1, 0], 
+              [1, 0, 0, 1, 1, 2, 0], 
+              [2, 1, 0, 2, 1, 2, 0]]
 
 def board_to_site_format(board):
     current_player = 1
     running_text = ""
     game_length = get_game_length(board)
     indexes_used = []
-    last_placed = -1
+    indexes_tried = [[] for x in range(42)]
     while True:
         placed = False
         print(running_text)
@@ -24,7 +24,7 @@ def board_to_site_format(board):
             for y in range(6):
                 temp = 5 - y
                 index = 7 * temp + x
-                if index == last_placed:
+                if index in indexes_tried[len(running_text)]:
                     break
                 index_exists = index in indexes_used
                 if index_exists:
@@ -34,12 +34,17 @@ def board_to_site_format(board):
                     current_player = 2 if current_player == 1 else 1
                     running_text += str(x + 1)
                     indexes_used.append(index)
-                    last_placed = -1
+                    for i in range(len(running_text), 42):
+                        indexes_tried[i] = []
+                    indexes_tried[len(running_text) - 1].append(index)
                     placed = True
                 else:
                     break
         if placed == False:
-            last_placed = indexes_used.pop()
+            try:
+                indexes_used.pop()
+            except:
+                print(board)
             current_player = 1 if current_player == 2 else 2
             running_text = running_text[:-1]
 
